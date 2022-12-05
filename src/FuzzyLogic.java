@@ -115,8 +115,28 @@ public class FuzzyLogic {
             System.out.print(rule.OUT_variable + " ");
             System.out.println(rule.FuzzySet3);
         }
+            System.out.println("--------------------------");
         }
 
+        //PARSE CRISP VALUES
+        variableParser=br.readLine();
+        System.out.println(variableParser);
+        Variables temp=null;
+        if (variableParser.equals("CrispValues:")){
 
+            while(!(variableParser=br.readLine()).equals("x")){
+                String[] arrOfStr = variableParser.split(" ");
+                for (int y = 0; y < variables.size(); y++) {
+                    if (variables.get(y).name.equals(arrOfStr[0]))
+                        temp = variables.get(y);
+                }
+                temp.crispValue=Integer.valueOf(arrOfStr[1]);
+                System.out.print(temp.name + " ");
+                System.out.println(temp.crispValue);
+            }
+            System.out.println("--------------------------");
+        }
     }
+
+    public void fuzzification(){};
 }

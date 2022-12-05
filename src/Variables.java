@@ -5,6 +5,8 @@ public class Variables {
     String name;
     //VARIABLES TYPE [IN,OUT]
     String type;
+    //CRISP VALUE
+    int crispValue;
     //TO STORE THE VARIABLES RANGE [LOWER,UPPER]
     ArrayList<Integer> range = new ArrayList<Integer>();
     //TO ADD TRIANGLE FIZZY SETS IF ITS A TRIANGLE
