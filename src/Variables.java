@@ -11,6 +11,4 @@ public class Variables {
     ArrayList<TRI> triangles = new ArrayList<TRI>();
     //ADD TRAPEZOIDAL FUZZY SETS IF ITS A TRAPEZOID
     ArrayList<TRAP> trapezoids = new ArrayList<TRAP>();
-    //ALL SET OF RULES FOR THIS VARIABLE
-    Rules rules;
 }

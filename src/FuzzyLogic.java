@@ -1,4 +1,5 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,6 +10,7 @@ public class FuzzyLogic {
 
         //PARSE VARIABLES
         ArrayList<Variables> variables=new ArrayList<Variables>();
+        ArrayList<Rule> rules=new ArrayList<Rule>();
         String variableParser;
         variableParser=br.readLine();
         System.out.println(variableParser);
@@ -35,10 +37,7 @@ public class FuzzyLogic {
         //PARSE FUZZYSETS
         variableParser=br.readLine();
         //System.out.println(variableParser);
-
-
-
-            if (variableParser.equals("FuzzySets:")) {
+        if (variableParser.equals("FuzzySets:")) {
                 for(int i=0;i<variables.size();i++) {
                 variableParser = br.readLine();
                 //System.out.println(variableParser);
@@ -89,5 +88,35 @@ public class FuzzyLogic {
                 System.out.println("--------------------------");
                 }
             }
+
+
+        //PARSE RULES
+        //FORMAT[IN_variable1 FuzzySet1 operator IN_variable2 FuzzySet2 => OUT_variable FuzzySet3]
+        variableParser=br.readLine();
+        System.out.println(variableParser);
+        if (variableParser.equals("Rules:")) {
+            while (!(variableParser = br.readLine()).equals("x")){
+            Rule rule = new Rule();
+            String[] arrOfStr = variableParser.split(" ");
+            //FORMAT[IN_variable1 FuzzySet1 operator IN_variable2 FuzzySet2 => OUT_variable FuzzySet3]
+            rule.IN_variable1 = arrOfStr[0];
+            rule.FuzzySet1 = arrOfStr[1];
+            rule.operator = arrOfStr[2];
+            rule.IN_variable2 = arrOfStr[3];
+            rule.FuzzySet2 = arrOfStr[4];
+            rule.OUT_variable = arrOfStr[6];
+            rule.FuzzySet3 = arrOfStr[7];
+            System.out.print(rule.IN_variable1 + " ");
+            System.out.print(rule.FuzzySet1 + " ");
+            System.out.print(rule.operator + " ");
+            System.out.print(rule.IN_variable2 + " ");
+            System.out.print(rule.FuzzySet2 + " ");
+            System.out.print("=> ");
+            System.out.print(rule.OUT_variable + " ");
+            System.out.println(rule.FuzzySet3);
+        }
+        }
+
+
     }
 }
