@@ -313,7 +313,7 @@ public class FuzzyLogic {
         }
     }
 
-    public void defuzzification(){
+    public void defuzzification(PrintWriter out){
         Variables out_variable=null;
 
         for (Variables variable : variables) {
@@ -355,17 +355,28 @@ public class FuzzyLogic {
         for (int i=0;i<out_variable.triangles.size();i++){
             System.out.println("Equation "+out_variable.triangles.get(i).name+"="+out_variable.triangles.get(i).total+"/"+divisor);
             System.out.println("Total="+out_variable.triangles.get(i).total/divisor);
+            out.println("The predicted risk for "+ out_variable.triangles.get(i).name + "= "+out_variable.triangles.get(i).total/divisor);
         }
         dividend=temp;
         total=dividend/divisor;
         System.out.println("Equation for Total= " +dividend + "/" + divisor);
         System.out.println("Total=" + total);
+        out.println("The predicted total for all="+ total);
     }
 
     public void run() throws IOException {
+
+        PrintWriter out = new PrintWriter("output.txt");
+        out.println("Running the simulation....");
         parse();
+        out.print("Fuzzification => ");
         fuzzification();
+        out.println("done");
+        out.print("Inference => ");
         inference();
-        defuzzification();
+        out.println("done");
+        out.println("Defuzzification => done ");
+        defuzzification(out);
+        out.close();
     }
 }
