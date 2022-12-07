@@ -9,4 +9,5 @@ public class Rule {
     String FuzzySet2;
     String FuzzySet3;
     String operator;
+    double value;
 }
