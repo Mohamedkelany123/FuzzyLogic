@@ -6,6 +6,6 @@ public class TRI {
     double degreeOfMemberShip=0;
 
     double averageWeight=0;
-    double total;
+    double total=0;
     ArrayList<Integer> triangleFuzzySets = new ArrayList<Integer>();
 }

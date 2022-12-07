@@ -1,5 +1,4 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -8,7 +7,7 @@ public class FuzzyLogic {
     ArrayList<Variables> variables=new ArrayList<>();
     ArrayList<Rule> rules=new ArrayList<>();
     public void parse() throws IOException {
-        File file = new File("E:\\Kelany\\Cairo_Uni_2022-2023\\Semester 1\\Soft Computing\\input.txt");
+        File file = new File("input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
 
         //PARSE VARIABLES
@@ -223,8 +222,8 @@ public class FuzzyLogic {
             Variables out_temp = null;
             int IN_variable1Index;
             int IN_variable2Index;
-            double IN_variable1Degree = -1;
-            double IN_variable2Degree = -1;
+            double IN_variable1Degree = 0;
+            double IN_variable2Degree = 0;
             int out_index = -1;
             //TO GET THE VARIABLES IN THE RULES
             for (Variables variable : variables) {
@@ -337,10 +336,9 @@ public class FuzzyLogic {
         double dividend;
         double divisor=0.0;
         double temp=0.0;
-        double temp2=0.0;
+        double temp2;
         double total;
         int triangleIndex=-1;
-        ArrayList<Double> list_defuszzification=new ArrayList<>();
         for (Rule rule : rules) {
             //get index of what to multiply by
             for (int y = 0; y < out_variable.triangles.size(); y++) {
@@ -351,6 +349,7 @@ public class FuzzyLogic {
             temp2=rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
             temp += rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
             out_variable.triangles.get(triangleIndex).total+=temp2;
+            System.out.println(rule.value);
             divisor += rule.value;
         }
         for (int i=0;i<out_variable.triangles.size();i++){
