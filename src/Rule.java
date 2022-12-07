@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public class Rule {
     //FORMAT[IN_variable1 FuzzySet1 operator IN_variable2 FuzzySet2 => OUT_variable FuzzySet3]

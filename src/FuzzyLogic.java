@@ -9,12 +9,11 @@ public class FuzzyLogic {
     public void parse() throws IOException {
         File file = new File("input.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
-
-        //PARSE VARIABLES
-
         String variableParser;
         variableParser=br.readLine();
         System.out.println(variableParser);
+
+        //PARSE VARIABLES
         if(variableParser.equals("Variables:"))
         {
             while(!(variableParser=br.readLine()).equals("x"))
@@ -22,11 +21,11 @@ public class FuzzyLogic {
                 Variables variable=new Variables();
                 String[] arrOfStr = variableParser.split(" ");
                 variable.name=arrOfStr[0];
-                variable.type=arrOfStr[1];
+                variable.InOrOut=arrOfStr[1];
                 variable.range.add(Integer.valueOf(arrOfStr[2]));
                 variable.range.add(Integer.valueOf(arrOfStr[3]));
                 System.out.println("Variable Name:" + variable.name);
-                System.out.println("Variable Type:" + variable.type);
+                System.out.println("Variable Type:" + variable.InOrOut);
                 System.out.println("Variable Range[Minimum]:" + variable.range.get(0));
                 System.out.println("Variable Range[Max]:" + variable.range.get(1));
                 System.out.println("--------------------------");
@@ -35,13 +34,13 @@ public class FuzzyLogic {
         }
 
 
-        //PARSE FUZZYSETS
         variableParser=br.readLine();
-        //System.out.println(variableParser);
+
+
+        //PARSE FUZZYSETS
         if (variableParser.equals("FuzzySets:")) {
                 for(int i=0;i<variables.size();i++) {
                 variableParser = br.readLine();
-                //System.out.println(variableParser);
                 Variables temp = null;
                 //TO GET THE VARIABLE BY ITS NAME
                     for (Variables variable : variables) {
@@ -58,7 +57,6 @@ public class FuzzyLogic {
                 while (!(variableParser = br.readLine()).equals("x")) {
                     String[] arrOfStr = variableParser.split(" ");
                     int size = arrOfStr.length;
-                    //System.out.println(size);
                     if (size == 5) {
                         TRI triangle = new TRI();
                         triangle.name = arrOfStr[0];
@@ -91,8 +89,6 @@ public class FuzzyLogic {
                 System.out.println("--------------------------");
                 }
             }
-
-
         //PARSE RULES
         //FORMAT[IN_variable1 FuzzySet1 operator IN_variable2 FuzzySet2 => OUT_variable FuzzySet3]
         variableParser=br.readLine();
@@ -130,6 +126,7 @@ public class FuzzyLogic {
 
             while(!(variableParser=br.readLine()).equals("x")){
                 String[] arrOfStr = variableParser.split(" ");
+                //TO GET VARIABLE BY ITS NAME
                 for (Variables variable : variables) {
                     if (variable.name.equals(arrOfStr[0]))
                         temp = variable;
@@ -149,7 +146,7 @@ public class FuzzyLogic {
             int crispValue = temp.crispValue;
 
             //TO GET DEGREE OF MEMBERSHIP FOR TRIANGLES
-            if (temp.triangles.size() != 0 && temp.type.equals("IN")) {
+            if (temp.triangles.size() != 0 && temp.InOrOut.equals("IN")) {
                 for (int y = 0; y < temp.triangles.size(); y++) {
                     for (int x = 0; x < 2; x++) {
                         int a = temp.triangles.get(y).triangleFuzzySets.get(x);
@@ -163,14 +160,11 @@ public class FuzzyLogic {
                                 x1 = 1;
                                 x2 = 0;
                             }
-                            System.out.println(temp.triangles.get(y).name);
-                            //System.out.println(x2 + "-" + x1 + "/" + b + "-" + a);
                             double slope = (x2 - x1) / ((double) b - (double) a);
-                            //System.out.println("Slope=" + slope);
                             //c=y-mx
                             double c = x2 - (slope * b);
-                            //System.out.println("Slope: " +slope +" C: "  + c);
                             temp.triangles.get(y).degreeOfMemberShip = (slope * crispValue) + c;
+                            System.out.println(temp.name+": " + temp.triangles.get(y).name);
                             System.out.println("Degree of membership: " + temp.triangles.get(y).degreeOfMemberShip);
                             System.out.println("--------------------------");
                         }
@@ -179,7 +173,7 @@ public class FuzzyLogic {
             }
 
             //TO GET DEGREE OF MEMBERSHIP FOR TRAPERZOIDS
-            if (temp.trapezoids.size() != 0 && temp.type.equals("IN")) {
+            if (temp.trapezoids.size() != 0 && temp.InOrOut.equals("IN")) {
                 for (int y = 0; y < temp.trapezoids.size(); y++) {
                     for (int x = 0; x < 3; x++) {
                         int a = temp.trapezoids.get(y).trapezoidFuzzySets.get(x);
@@ -196,12 +190,10 @@ public class FuzzyLogic {
                                 x1 = 1;
                                 x2 = 0;
                             }
-                            System.out.println(temp.trapezoids.get(y).name);
-                            //System.out.println(x2 + "-" + x1 + "/" + b + "-" + a);
                             double slope = (x2 - x1) / ((double) b - (double) a);
                             double c = x2 - (slope * b);
-                            //System.out.println("Slope: " +slope +" C: "  + c);
                             temp.trapezoids.get(y).degreeOfMemberShip = (slope * crispValue) + c;
+                            System.out.println(temp.name+": " + temp.trapezoids.get(y).name);
                             System.out.println("Degree of membership: " + temp.trapezoids.get(y).degreeOfMemberShip);
                             System.out.println("--------------------------");
 
@@ -220,8 +212,6 @@ public class FuzzyLogic {
             Variables IN_variable1 = null;
             Variables IN_variable2 = null;
             Variables out_temp = null;
-            int IN_variable1Index;
-            int IN_variable2Index;
             double IN_variable1Degree = 0;
             double IN_variable2Degree = 0;
             int out_index = -1;
@@ -231,26 +221,21 @@ public class FuzzyLogic {
                     IN_variable1 = variable;
                 } else if (variable.name.equals(rule.IN_variable2)) {
                     IN_variable2 = variable;
-                } else if (variable.type.equals("OUT")) {
+                } else if (variable.InOrOut.equals("OUT")) {
                     out_temp = variable;
                 }
             }
-            //TO GET THE INDEX OF TRIANGLE OR TRAP TO GET DEGREE OF MEMBERSHIP FOR VAR1
+            //TO GET THE INDEX OF TRIANGLE OR TRAP TO SET DEGREE GET MEMBERSHIP FOR VAR1
             if (Objects.requireNonNull(IN_variable1).TriOrTrap.equals("TRAP")) {
                 for (int y = 0; y < IN_variable1.trapezoids.size(); y++) {
                     if (IN_variable1.trapezoids.get(y).name.equals(rule.FuzzySet1)) {
-                        IN_variable1Index = y;
-                        IN_variable1Degree = IN_variable1.trapezoids.get(IN_variable1Index).degreeOfMemberShip;
-                        //System.out.println(IN_variable1.trapezoids.get(IN_variable1Index).name);
-
+                        IN_variable1Degree = IN_variable1.trapezoids.get(y).degreeOfMemberShip;
                     }
                 }
             } else {
                 for (int y = 0; y < IN_variable1.triangles.size(); y++) {
                     if (IN_variable1.triangles.get(y).name.equals(rule.FuzzySet1)) {
-                        IN_variable1Index = y;
-                        IN_variable1Degree = IN_variable1.triangles.get(IN_variable1Index).degreeOfMemberShip;
-                        //System.out.println(IN_variable1.triangles.get(IN_variable1Index).name);
+                        IN_variable1Degree = IN_variable1.triangles.get(y).degreeOfMemberShip;
                     }
                 }
             }
@@ -258,35 +243,13 @@ public class FuzzyLogic {
             if (Objects.requireNonNull(IN_variable2).TriOrTrap.equals("TRAP")) {
                 for (int y = 0; y < IN_variable2.trapezoids.size(); y++) {
                     if (IN_variable2.trapezoids.get(y).name.equals(rule.FuzzySet2)) {
-                        IN_variable2Index = y;
-                        IN_variable2Degree = IN_variable2.trapezoids.get(IN_variable2Index).degreeOfMemberShip;
-                        //System.out.println(IN_variable2.trapezoids.get(IN_variable2Index).name);
+                        IN_variable2Degree = IN_variable2.trapezoids.get(y).degreeOfMemberShip;
                     }
                 }
             } else {
                 for (int y = 0; y < IN_variable2.triangles.size(); y++) {
                     if (IN_variable2.triangles.get(y).name.equals(rule.FuzzySet2)) {
-                        IN_variable2Index = y;
-                        IN_variable2Degree = IN_variable2.triangles.get(IN_variable2Index).degreeOfMemberShip;
-                        //System.out.println(IN_variable2.triangles.get(IN_variable2Index).name);
-
-                    }
-                }
-            }
-            //TO GET THE INDEX OF TRIANGLE OR TRAP TO GET DEGREE OF MEMBERSHIP FOR OUT_TEMP
-            if (Objects.requireNonNull(out_temp).TriOrTrap.equals("TRAP")) {
-                for (int y = 0; y < out_temp.trapezoids.size(); y++) {
-                    if (out_temp.trapezoids.get(y).name.equals(rule.FuzzySet3)) {
-                        out_index = y;
-                        //System.out.println(out_temp.trapezoids.get(out_index).name);
-                    }
-                }
-            } else {
-                for (int y = 0; y < out_temp.triangles.size(); y++) {
-                    if (out_temp.triangles.get(y).name.equals(rule.FuzzySet3)) {
-                        out_index = y;
-                        //System.out.println(out_temp.triangles.get(out_index).name);
-
+                        IN_variable2Degree = IN_variable2.triangles.get(y).degreeOfMemberShip;
                     }
                 }
             }
@@ -294,9 +257,7 @@ public class FuzzyLogic {
             if (rule.operator.equals("and")) {
                 if (IN_variable1Degree <= IN_variable2Degree) {
                     rule.value = IN_variable1Degree;
-                    out_temp.triangles.get(out_index).degreeOfMemberShip = IN_variable1Degree;
                 } else {
-                    out_temp.triangles.get(out_index).degreeOfMemberShip = IN_variable2Degree;
                     rule.value = IN_variable2Degree;
                 }
             }
@@ -304,10 +265,16 @@ public class FuzzyLogic {
             if (rule.operator.equals("or")) {
                 if (IN_variable1Degree <= IN_variable2Degree) {
                     rule.value = IN_variable2Degree;
-                    out_temp.triangles.get(out_index).degreeOfMemberShip = IN_variable2Degree;
                 } else {
                     rule.value = IN_variable1Degree;
-                    out_temp.triangles.get(out_index).degreeOfMemberShip = IN_variable1Degree;
+                }
+            }
+            //FOR OPERATOR AND_NOT
+            if (rule.operator.equals("and_not")) {
+                if (IN_variable1Degree <= IN_variable2Degree) {
+                    rule.value = IN_variable1Degree;
+                } else {
+                    rule.value = 1-IN_variable2Degree;
                 }
             }
         }
@@ -317,7 +284,7 @@ public class FuzzyLogic {
         Variables out_variable=null;
 
         for (Variables variable : variables) {
-            if (variable.type.equals("OUT")) {
+            if (variable.InOrOut.equals("OUT")) {
                 out_variable = variable;
             }
         }
@@ -349,11 +316,10 @@ public class FuzzyLogic {
             temp2=rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
             temp += rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
             out_variable.triangles.get(triangleIndex).total+=temp2;
-            System.out.println(rule.value);
             divisor += rule.value;
         }
         for (int i=0;i<out_variable.triangles.size();i++){
-            System.out.println("Equation "+out_variable.triangles.get(i).name+"="+out_variable.triangles.get(i).total+"/"+divisor);
+            System.out.println("Equation for "+out_variable.triangles.get(i).name+"="+out_variable.triangles.get(i).total+"/"+divisor);
             System.out.println("Total="+out_variable.triangles.get(i).total/divisor);
             out.println("The predicted risk for "+ out_variable.triangles.get(i).name + "= "+out_variable.triangles.get(i).total/divisor);
         }
