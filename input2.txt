@@ -22,9 +22,9 @@ normal TRI 25 50 75
 high TRI 50 100 100
 x
 risk2
-vlow TRI 0 25 50 
-vnormal TRI 25 50 75
-vhigh TRI 50 100 100
+small TRI 0 25 50
+medium TRI 25 50 75
+large TRI 50 100 100
 x
 Rules:
 proj_funding high or exp_level expert => risk low
@@ -32,11 +32,11 @@ proj_funding medium and exp_level intermediate => risk normal
 proj_funding medium and exp_level beginner => risk normal
 proj_funding low and exp_level beginner => risk high
 proj_funding very_low and_not exp_level expert => risk high
-proj_funding high or exp_level expert => risk2 vlow
-proj_funding medium and exp_level intermediate => risk2 vnormal
-proj_funding medium and exp_level beginner => risk2 vnormal
-proj_funding low and exp_level beginner => risk2 vhigh
-proj_funding very_low and_not exp_level expert => risk2 vhigh
+proj_funding high or exp_level expert => risk2 small
+proj_funding medium and exp_level intermediate => risk2 medium
+proj_funding medium and exp_level beginner => risk2 medium
+proj_funding low and exp_level beginner => risk2 large
+proj_funding very_low and_not exp_level expert => risk2 large
 x
 CrispValues:
 proj_funding 50

@@ -2,13 +2,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
-//OUT VARIABLES SHOULDNT HAVE SAME FUZZY SETS NAMES
 public class FuzzyLogic {
 
     ArrayList<Variables> variables=new ArrayList<>();
     ArrayList<Rule> rules=new ArrayList<>();
     public void parse() throws IOException {
-        File file = new File("input.txt");
+        File file = new File("input2.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
         String variableParser;
         variableParser=br.readLine();
@@ -324,14 +323,14 @@ public class FuzzyLogic {
                 Variables outTemp=out_variables.get(i);
                 if(outTemp.triangles.size()!=0){
                     for (int y=0;y<outTemp.triangles.size();y++){
-                        if (outTemp.triangles.get(y).name.equals(rule.FuzzySet3)){
+                        if (outTemp.triangles.get(y).name.equals(rule.FuzzySet3) && outTemp.name.equals(rule.OUT_variable)){
                             triangleIndex=y;
                             outIndex=i;
                         }
                     }
                 }else if(outTemp.trapezoids.size()!=0){
                     for (int y=0;y<outTemp.trapezoids.size();y++){
-                        if (outTemp.trapezoids.get(y).name.equals(rule.FuzzySet3)){
+                        if (outTemp.trapezoids.get(y).name.equals(rule.FuzzySet3) && outTemp.name.equals(rule.OUT_variable)){
                             trapezoidIndex=y;
                             outIndex=i;
                         }
@@ -342,7 +341,6 @@ public class FuzzyLogic {
                 triOrTrapTemp= rule.value * out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
                 totalTemp+= rule.value*out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
                 out_variables.get(outIndex).triangles.get(triangleIndex).total+=triOrTrapTemp;
-//                System.out.println(out_variables.get(outIndex).name+"-----"+out_variables.get(outIndex).triangles.get(triangleIndex).name + "----------"+ out_variables.get(outIndex).triangles.get(triangleIndex).total);
                 divisor += rule.value;
                 double temp=divisors.get(outIndex);
                 temp+= rule.value;
@@ -379,9 +377,6 @@ public class FuzzyLogic {
         System.out.println("Equation for Total= " +dividend + "/" + divisor);
         System.out.println("Total=" + total);
         out.println("The predicted total for all="+ total);
-
-
-
     }
     public void run() throws IOException {
 
@@ -395,7 +390,6 @@ public class FuzzyLogic {
         inference();
         out.println("done");
         out.println("Defuzzification => done ");
-        //defuzzification(out);
         defuzzification(out);
         out.close();
     }
