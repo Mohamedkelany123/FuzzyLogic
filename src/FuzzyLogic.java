@@ -304,11 +304,13 @@ public class FuzzyLogic {
         double divisor=0.0;
         //TO SET DIVISORS FOR EACH OUT VARIABLE
         ArrayList<Double> divisors=new ArrayList<>();
+        ArrayList<Double> dividends=new ArrayList<>();
         divisors.add(0.0);
         for (int i=0;i<out_variables.size();i++){
             divisors.add(0.0);
+            dividends.add(0.0);
         }
-        double totalTemp=0.0;
+        //double totalTemp=0.0;
 
         double total;
 
@@ -339,7 +341,9 @@ public class FuzzyLogic {
             }
             if (triangleIndex!=-1){
                 triOrTrapTemp= rule.value * out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
+                double totalTemp= dividends.get(outIndex);
                 totalTemp+= rule.value*out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
+                dividends.set(outIndex,totalTemp);
                 out_variables.get(outIndex).triangles.get(triangleIndex).total+=triOrTrapTemp;
                 divisor += rule.value;
                 double temp=divisors.get(outIndex);
@@ -347,7 +351,9 @@ public class FuzzyLogic {
                 divisors.set(outIndex,temp);
             } else if (trapezoidIndex!=-1) {
                 triOrTrapTemp= rule.value*out_variables.get(outIndex).trapezoids.get(triangleIndex).averageWeight;
+                double totalTemp= dividends.get(outIndex);
                 totalTemp+= rule.value*out_variables.get(outIndex).trapezoids.get(triangleIndex).averageWeight;
+                dividends.set(outIndex,totalTemp);
                 out_variables.get(outIndex).trapezoids.get(triangleIndex).total+=triOrTrapTemp;
                 divisor += rule.value;
                 double temp=divisors.get(outIndex);
@@ -372,11 +378,14 @@ public class FuzzyLogic {
             }
         }
 
-        dividend=totalTemp;
-        total=dividend/divisor;
-        System.out.println("Equation for Total= " +dividend + "/" + divisor);
-        System.out.println("Total=" + total);
-        out.println("The predicted total for all="+ total);
+
+        for (int i=0;i<out_variables.size();i++) {
+            dividend = dividends.get(i);
+            total = dividend / divisors.get(i);
+            System.out.println(out_variables.get(i).name + ": Equation for Total= " + dividend + "/" + divisors.get(i));
+            System.out.println("Total=" + total);
+            out.println(out_variables.get(i).name + ": The predicted total for all=" + total);
+        }
     }
     public void run() throws IOException {
 

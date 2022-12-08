@@ -2,7 +2,7 @@ Variables:
 proj_funding IN 0 100
 exp_level IN 0 60
 risk OUT 0 100
-risk2 OUT 0 100
+play OUT 0 100
 x
 FuzzySets:
 exp_level
@@ -21,7 +21,7 @@ low TRI 0 25 50
 normal TRI 25 50 75
 high TRI 50 100 100
 x
-risk2
+play
 small TRI 0 25 50
 medium TRI 25 50 75
 large TRI 50 100 100
@@ -32,11 +32,11 @@ proj_funding medium and exp_level intermediate => risk normal
 proj_funding medium and exp_level beginner => risk normal
 proj_funding low and exp_level beginner => risk high
 proj_funding very_low and_not exp_level expert => risk high
-proj_funding high or exp_level expert => risk2 small
-proj_funding medium and exp_level intermediate => risk2 medium
-proj_funding medium and exp_level beginner => risk2 medium
-proj_funding low and exp_level beginner => risk2 large
-proj_funding very_low and_not exp_level expert => risk2 large
+proj_funding high or exp_level expert => play small
+proj_funding medium and exp_level intermediate => play medium
+proj_funding medium and exp_level beginner => play medium
+proj_funding low and exp_level beginner => play large
+proj_funding very_low and_not exp_level expert => play large
 x
 CrispValues:
 proj_funding 50
