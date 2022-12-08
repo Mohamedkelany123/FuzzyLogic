@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
+//OUT VARIABLES SHOULDNT HAVE SAME FUZZY SETS NAMES
 public class FuzzyLogic {
 
     ArrayList<Variables> variables=new ArrayList<>();
@@ -211,18 +212,14 @@ public class FuzzyLogic {
         for (Rule rule : rules) {
             Variables IN_variable1 = null;
             Variables IN_variable2 = null;
-            Variables out_temp = null;
             double IN_variable1Degree = 0;
             double IN_variable2Degree = 0;
-            int out_index = -1;
             //TO GET THE VARIABLES IN THE RULES
             for (Variables variable : variables) {
                 if (variable.name.equals(rule.IN_variable1)) {
                     IN_variable1 = variable;
                 } else if (variable.name.equals(rule.IN_variable2)) {
                     IN_variable2 = variable;
-                } else if (variable.InOrOut.equals("OUT")) {
-                    out_temp = variable;
                 }
             }
             //TO GET THE INDEX OF TRIANGLE OR TRAP TO SET DEGREE GET MEMBERSHIP FOR VAR1
@@ -255,19 +252,11 @@ public class FuzzyLogic {
             }
             //FOR OPERATOR AND [MIN]
             if (rule.operator.equals("and")) {
-                if (IN_variable1Degree <= IN_variable2Degree) {
-                    rule.value = IN_variable1Degree;
-                } else {
-                    rule.value = IN_variable2Degree;
-                }
+                rule.value = Math.min(IN_variable1Degree, IN_variable2Degree);
             }
             //FOR OPERATOR OR [MAX]
             if (rule.operator.equals("or")) {
-                if (IN_variable1Degree <= IN_variable2Degree) {
-                    rule.value = IN_variable2Degree;
-                } else {
-                    rule.value = IN_variable1Degree;
-                }
+                rule.value = Math.max(IN_variable1Degree, IN_variable2Degree);
             }
             //FOR OPERATOR AND_NOT
             if (rule.operator.equals("and_not")) {
@@ -281,55 +270,119 @@ public class FuzzyLogic {
     }
 
     public void defuzzification(PrintWriter out){
-        Variables out_variable=null;
-
+        ArrayList<Variables> out_variables=new ArrayList<>();
+        //GET ALL OUT VARIABLES
         for (Variables variable : variables) {
             if (variable.InOrOut.equals("OUT")) {
-                out_variable = variable;
+                out_variables.add(variable);
             }
         }
-
-        //WEIGHTED AVERAGE
-        for (int i = 0; i< Objects.requireNonNull(out_variable).triangles.size(); i++){
-            double temp=0;
-            for (int y=0;y<out_variable.triangles.get(i).triangleFuzzySets.size();y++){
-                temp+=out_variable.triangles.get(i).triangleFuzzySets.get(y);
-            }
-            out_variable.triangles.get(i).averageWeight=temp/out_variable.triangles.get(i).triangleFuzzySets.size();
-            /* System.out.println(out_variable.triangles.get(i).averageWeight); */
-        }
-
-        //SUBSTITUTE THE WEIGHTED AVERAGE EQUATION
-        double dividend;
-        double divisor=0.0;
-        double temp=0.0;
-        double temp2;
-        double total;
-        int triangleIndex=-1;
-        for (Rule rule : rules) {
-            //get index of what to multiply by
-            for (int y = 0; y < out_variable.triangles.size(); y++) {
-                if (out_variable.triangles.get(y).name.equals(rule.FuzzySet3)) {
-                    triangleIndex = y;
+        //CALCULATE WHEIGHTED AVERAGE
+        for (Variables outTemp : out_variables) {
+            //CALCULATE IF TRIANGLE ELSE CALCULATE FOR TRAPEZOID
+            if (outTemp.triangles.size() != 0) {
+                for (int i = 0; i < outTemp.triangles.size(); i++) {
+                    double temp = 0;
+                    for (int y = 0; y < outTemp.triangles.get(i).triangleFuzzySets.size(); y++) {
+                        temp += outTemp.triangles.get(i).triangleFuzzySets.get(y);
+                    }
+                    outTemp.triangles.get(i).averageWeight = temp / outTemp.triangles.get(i).triangleFuzzySets.size();
+                }
+            } else {
+                for (int i = 0; i < outTemp.trapezoids.size(); i++) {
+                    double temp = 0;
+                    for (int y = 0; y < outTemp.trapezoids.get(i).trapezoidFuzzySets.size(); y++) {
+                        temp += outTemp.trapezoids.get(i).trapezoidFuzzySets.get(y);
+                    }
+                    outTemp.trapezoids.get(i).averageWeight = temp / outTemp.trapezoids.get(i).trapezoidFuzzySets.size();
                 }
             }
-            temp2=rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
-            temp += rule.value * out_variable.triangles.get(triangleIndex).averageWeight;
-            out_variable.triangles.get(triangleIndex).total+=temp2;
-            divisor += rule.value;
+
         }
-        for (int i=0;i<out_variable.triangles.size();i++){
-            System.out.println("Equation for "+out_variable.triangles.get(i).name+"="+out_variable.triangles.get(i).total+"/"+divisor);
-            System.out.println("Total="+out_variable.triangles.get(i).total/divisor);
-            out.println("The predicted risk for "+ out_variable.triangles.get(i).name + "= "+out_variable.triangles.get(i).total/divisor);
+
+
+        double dividend;
+        double divisor=0.0;
+        //TO SET DIVISORS FOR EACH OUT VARIABLE
+        ArrayList<Double> divisors=new ArrayList<>();
+        divisors.add(0.0);
+        for (int i=0;i<out_variables.size();i++){
+            divisors.add(0.0);
         }
-        dividend=temp;
+        double totalTemp=0.0;
+
+        double total;
+
+        //SUBSTITUTE IN THE WEIGHTED AVERAGE EQUATION
+        for (Rule rule : rules) {
+            double triOrTrapTemp;
+            int triangleIndex=-1;
+            int trapezoidIndex=-1;
+            int outIndex=-1;
+            //Get index of what to multiply by
+            for (int i=0;i<out_variables.size();i++){
+                Variables outTemp=out_variables.get(i);
+                if(outTemp.triangles.size()!=0){
+                    for (int y=0;y<outTemp.triangles.size();y++){
+                        if (outTemp.triangles.get(y).name.equals(rule.FuzzySet3)){
+                            triangleIndex=y;
+                            outIndex=i;
+                        }
+                    }
+                }else if(outTemp.trapezoids.size()!=0){
+                    for (int y=0;y<outTemp.trapezoids.size();y++){
+                        if (outTemp.trapezoids.get(y).name.equals(rule.FuzzySet3)){
+                            trapezoidIndex=y;
+                            outIndex=i;
+                        }
+                    }
+                }
+            }
+            if (triangleIndex!=-1){
+                triOrTrapTemp= rule.value * out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
+                totalTemp+= rule.value*out_variables.get(outIndex).triangles.get(triangleIndex).averageWeight;
+                out_variables.get(outIndex).triangles.get(triangleIndex).total+=triOrTrapTemp;
+//                System.out.println(out_variables.get(outIndex).name+"-----"+out_variables.get(outIndex).triangles.get(triangleIndex).name + "----------"+ out_variables.get(outIndex).triangles.get(triangleIndex).total);
+                divisor += rule.value;
+                double temp=divisors.get(outIndex);
+                temp+= rule.value;
+                divisors.set(outIndex,temp);
+            } else if (trapezoidIndex!=-1) {
+                triOrTrapTemp= rule.value*out_variables.get(outIndex).trapezoids.get(triangleIndex).averageWeight;
+                totalTemp+= rule.value*out_variables.get(outIndex).trapezoids.get(triangleIndex).averageWeight;
+                out_variables.get(outIndex).trapezoids.get(triangleIndex).total+=triOrTrapTemp;
+                divisor += rule.value;
+                double temp=divisors.get(outIndex);
+                temp+= rule.value;
+                divisors.set(outIndex,temp);
+            }
+        }
+        //OUTPUT FOR EVERY FUZZYSET
+        for (int y=0;y<out_variables.size();y++) {
+            if (out_variables.get(y).TriOrTrap.equals("TRI")) {
+                for (int i = 0; i < out_variables.get(y).triangles.size(); i++) {
+                    System.out.println(out_variables.get(y).name +": Equation for " + out_variables.get(y).triangles.get(i).name + "=" + out_variables.get(y).triangles.get(i).total + "/" + divisors.get(y));
+                    System.out.println(out_variables.get(y).name +": Total=" + out_variables.get(y).triangles.get(i).total / divisors.get(y));
+                    out.println(out_variables.get(y).name +": The predicted risk for " + out_variables.get(y).triangles.get(i).name + "= " + out_variables.get(y).triangles.get(i).total / divisors.get(y));
+                }
+            } else if (out_variables.get(y).TriOrTrap.equals("TRAP")) {
+                for (int i = 0; i < out_variables.get(y).trapezoids.size(); i++) {
+                    System.out.println(out_variables.get(y).name +": Equation for " + out_variables.get(y).trapezoids.get(i).name + "=" + out_variables.get(y).trapezoids.get(i).total + "/" + divisors.get(y));
+                    System.out.println(out_variables.get(y).name +": Total=" + out_variables.get(y).trapezoids.get(i).total / divisor);
+                    out.println(out_variables.get(y).name +": The predicted risk for " + out_variables.get(y).trapezoids.get(i).name + "= " + out_variables.get(y).trapezoids.get(i).total / divisors.get(y));
+                }
+            }
+        }
+
+        dividend=totalTemp;
         total=dividend/divisor;
         System.out.println("Equation for Total= " +dividend + "/" + divisor);
         System.out.println("Total=" + total);
         out.println("The predicted total for all="+ total);
-    }
 
+
+
+    }
     public void run() throws IOException {
 
         PrintWriter out = new PrintWriter("output.txt");
@@ -342,6 +395,7 @@ public class FuzzyLogic {
         inference();
         out.println("done");
         out.println("Defuzzification => done ");
+        //defuzzification(out);
         defuzzification(out);
         out.close();
     }

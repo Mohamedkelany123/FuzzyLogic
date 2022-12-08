@@ -5,5 +5,6 @@ public class TRAP {
     String name;
     double degreeOfMemberShip=0;
     double total=0;
+    double averageWeight=0;
     ArrayList<Integer> trapezoidFuzzySets = new ArrayList<Integer>();
 }

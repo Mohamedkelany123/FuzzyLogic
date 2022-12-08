@@ -2,7 +2,7 @@ Running the simulation....
 Fuzzification => done
 Inference => done
 Defuzzification => done 
-The predicted risk for low= 12.499999999999996
-The predicted risk for normal= 25.00000000000001
-The predicted risk for high= 0.0
+risk: The predicted risk for low= 12.499999999999996
+risk: The predicted risk for normal= 25.00000000000001
+risk: The predicted risk for high= 0.0
 The predicted total for all=37.50000000000001
